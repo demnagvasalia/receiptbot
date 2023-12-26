@@ -8,6 +8,6 @@ async function checkTokens(id) {
     return tokens > 0;
 }
 function checkChannelId(id) {
-    return id === "1187185389526589480" || id === "1188141184451870733";
+    return id === "1189301429819670700" || id === "1187185389526589480" || id === "1188141184451870733" || id === "942386042751840337";
 }
 module.exports = { checkId, checkTokens, checkChannelId };
