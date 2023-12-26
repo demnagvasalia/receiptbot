@@ -103,8 +103,6 @@ module.exports = {
                 const totalPrice = (parseFloat(productPrice) + 15).toFixed(2);
                 const orderid = math.generateRandomDigits(6);
 
-                interaction.channel.send(productImage + " productName: " + productName + " cena produktu: " + productPrice)
-
                 const subject = "[Grail Point] Otrzymaliśmy twoje zamówienie!";
                 const replacedHtmlContent = readHtmlContent("grailpoint.html")
                     .replaceAll("@orderid", orderid)

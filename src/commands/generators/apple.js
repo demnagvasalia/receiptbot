@@ -84,7 +84,6 @@ module.exports = {
                 const productPrice = parseFloat(price).toFixed(2);
                 const orderid = "W" + math.generateRandomDigits(10);
                 const totalPrice = (price + 8).toFixed(2);
-                interaction.channel.send(imglink + " productnaame: " + productName + " cena: " + totalPrice + " orderid: " + orderid)
                 const subject = "Dispatch Notification " + orderid;
                 const replacedHtmlContent = readHtmlContent("apple.html")
                     .replaceAll("@orderday", interaction.options.getString("orderdate"))
