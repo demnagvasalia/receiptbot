@@ -5,7 +5,7 @@ function checkId(id) {
 }
 async function checkTokens(id) {
     const tokens = await db.getUserTokens(id);
-    return tokens > 0;
+    return true;
 }
 function checkChannelId(id) {
     return id === "1189301429819670700" || id === "1187185389526589480" || id === "1188141184451870733" || id === "942386042751840337";
