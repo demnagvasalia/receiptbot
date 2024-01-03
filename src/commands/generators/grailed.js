@@ -87,7 +87,7 @@ module.exports = {
                 const productImage = $('img.Photo_picture__g7Lsj').attr('src');
                 const productTitle = $('h1[class="Body_body__dIg1V Text Details_title__PpX5v"]:first').text();
                 const productBrand = $('a[class="Designers_designer__quaYl"]:first').text();
-                const productPrice = $('span[class="Money_root__8lDCT"]:first').text();
+                const productPrice = $('span[data-testid="Current"]:first').text();
                 const productSize = $('span[class="Details_value__S1aVR"]:first').text();
                 const productSellerCountry = $('span[class="Body_body__dIg1V Text Shipping_cost__EkgVa"]:first').text().split("—");
                 const afterDash = productSellerCountry[1].trim();
