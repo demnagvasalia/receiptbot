@@ -14,7 +14,7 @@ async function addTokens(id, tokens) {
         }
 
         // Update or set the tokens
-        //user.tokens = (user.tokens || 0) + tokens;
+        user.tokens = (user.tokens || 0) + tokens;
 
         // Save the user to the database using the standard save method
         await user.save();

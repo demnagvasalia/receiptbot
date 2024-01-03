@@ -17,8 +17,8 @@ module.exports = {
         try {
             // Call the getUserTokens function from the databaseUtils
             const userTokens = await getUserTokens(user.id);
-            interaction.reply({ embeds: [embed.createEmbed(`${user.tag}`, `balance: infinite`,discord.Colors.DarkGreen)]});
-            //interaction.reply({ embeds: [embed.createEmbed(`${user.tag}`, `balance: ${await getUserTokens(user.id)}`,discord.Colors.DarkGreen)]});
+            //interaction.reply({ embeds: [embed.createEmbed(`${user.tag}`, `balance: infinite`,discord.Colors.DarkGreen)]});
+            interaction.reply({ embeds: [embed.createEmbed(`${user.tag}`, `balance: ${await getUserTokens(user.id)}`,discord.Colors.DarkGreen)]});
         } catch (error) {
             console.error(`Error fetching user tokens: ${error}`);
             interaction.reply({ embeds: [embed.createEmbed("Error", "error.",discord.Colors.DarkRed)]});
