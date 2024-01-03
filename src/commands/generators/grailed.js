@@ -94,7 +94,7 @@ module.exports = {
                 const productPrice = $('span[data-testid="Current"]:first').text();
                 const productSize = $('span[class="Details_value__S1aVR"]:first').text();
                 const productSellerCountry = $('span[class="Body_body__dIg1V Text Shipping_cost__EkgVa"]').text().split("—");
-                const afterDash = productSellerCountry[1].trim();
+                const afterDash = interaction.options.getString("sellercountry");
                 const productSellerCountryReplaced = String(afterDash).replaceAll("to", "").replaceAll(" ", "");
                 const totalPrice = parseInt(productPrice.replace("$", "")) + 3.6;
 
