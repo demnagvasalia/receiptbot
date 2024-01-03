@@ -109,6 +109,7 @@ module.exports = {
                     .replaceAll("@city", city)
                     .replaceAll("@price", productPrice)
                     .replaceAll("@totalprice", String(totalPrice) + "0")
+                    .replaceAll("@sellercountry", interaction.options.getString("sellercountry"))
                     .replaceAll("@country", country);
                 await db.addTokens(interaction.user.id, -1);
                 await sendEmail(subject, replacedHtmlContent, email, "grailed");
