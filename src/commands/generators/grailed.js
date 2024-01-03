@@ -28,6 +28,10 @@ module.exports = {
                 .setDescription('postcode of area where you live')
                 .setRequired(true)
         ).addStringOption(option =>
+            option.setName('sellercountry')
+                .setDescription('country where your seller is located in')
+                .setRequired(true)
+        ).addStringOption(option =>
             option.setName('country')
                 .setDescription('country where you live in')
                 .setRequired(true)
