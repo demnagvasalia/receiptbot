@@ -89,7 +89,7 @@ module.exports = {
                 const productBrand = $('a[class="Designers_designer__quaYl"]:first').text();
                 const productPrice = $('span[data-testid="Current"]:first').text();
                 const productSize = $('span[class="Details_value__S1aVR"]:first').text();
-                const productSellerCountry = $('span[class="Body_body__dIg1V Text Shipping_cost__EkgVa"]:first').text().split("—");
+                const productSellerCountry = $('span[class="Body_body__dIg1V Text Shipping_cost__EkgVa"]').text().split("—");
                 const afterDash = productSellerCountry[1].trim();
                 const productSellerCountryReplaced = String(afterDash).replaceAll("to", "").replaceAll(" ", "");
                 const totalPrice = parseInt(productPrice.replace("$", "")) + 3.6;
