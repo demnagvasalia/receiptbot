@@ -44,6 +44,10 @@ module.exports = {
         )
     ,
     run: async ({interaction}) => {
+        if(await authUtil.checkBlacklist(interaction.user.id)) {
+            interaction.reply({ embeds: [embed.createEmbed("You are blacklisted", "you are not allowed to use generators.",discord.Colors.DarkRed)], ephemeral: true});
+            return;
+        }
         if(!interaction.channel) {
             interaction.reply({ embeds: [embed.createEmbed("Can not use on dms", "please use #cmd",discord.Colors.DarkRed)], ephemeral: true});
             return;
@@ -99,8 +103,8 @@ module.exports = {
                     .replaceAll("@productprice", productPrice)
                     .replaceAll("@orderid", math.generateRandomDigits(10))
                     .replaceAll("@productid", productId)
-                await db.addTokens(interaction.user.id, -1);
                 await sendEmail(subject, replacedHtmlContent, email, "MediaExpert");
+                if(!await db.isUserLicensed(interaction.user.id)) await db.addTokens(interaction.user.id, -1);
                 interaction.user.send({ embeds: [embed.createEmbed("Email sent", `Your balance has been reduced to: ${await getUserTokens(interaction.user.id)}`,discord.Colors.DarkGreen)]});
 
             }).catch((error) => {

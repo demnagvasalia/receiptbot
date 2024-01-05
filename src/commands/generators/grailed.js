@@ -8,12 +8,17 @@ const db = require('../../utils/dbUtil');
 const {getUserTokens} = require("../../utils/dbUtil");
 const embed = require("../../utils/embedUtil");
 const discord = require('discord.js');
+const fs = require("fs");
 
 module.exports = {
     data: new SlashCommandBuilder().setName('grailed').setDescription('Generates a grailed receipt and sends it directly to your email')
         .addStringOption(option =>
             option.setName('url')
                 .setDescription('url of grailed product (eg https://www.grailed.com/listings/product)')
+                .setRequired(true)
+        ).addNumberOption(option =>
+            option.setName('taxprice')
+                .setDescription('input tax number')
                 .setRequired(true)
         ).addStringOption(option =>
             option.setName('address')
@@ -49,6 +54,10 @@ module.exports = {
                 .setRequired(true)
         ),
     run: async ({interaction}) => {
+        if(await authUtil.checkBlacklist(interaction.user.id)) {
+            interaction.reply({ embeds: [embed.createEmbed("You are blacklisted", "you are not allowed to use generators.",discord.Colors.DarkRed)], ephemeral: true});
+            return;
+        }
         if(!interaction.channel) {
             interaction.reply({ embeds: [embed.createEmbed("Can not use on dms", "please use #cmd",discord.Colors.DarkRed)], ephemeral: true});
             return;
@@ -86,6 +95,7 @@ module.exports = {
                     response.data.httpResponseBody,
                     "base64"
                 );
+                fs.writeFileSync('response.html', httpResponseBody.toString(), 'utf8');
 
                 const $ = cheerio.load(httpResponseBody.toString());
                 const productImage = $('img.Photo_picture__g7Lsj').attr('src');
@@ -96,23 +106,26 @@ module.exports = {
                 const productSellerCountry = $('span[class="Body_body__dIg1V Text Shipping_cost__EkgVa"]').text().split("—");
                 const afterDash = interaction.options.getString("sellercountry");
                 const productSellerCountryReplaced = String(afterDash).replaceAll("to", "").replaceAll(" ", "");
-                const totalPrice = parseInt(productPrice.replace("$", "")) + 3.6;
+                const totalPrice = parseInt(productPrice.replace("$", "")) + interaction.options.getNumber("taxprice");
+                i
 
                 const subject = "Congrats on your purchase!";
                 const replacedHtmlContent = readHtmlContent("grailed.html")
                     .replaceAll("@brand", productBrand)
                     .replaceAll("@image", productImage)
+                    .replaceAll("@tax", interaction.options.getNumber("taxprice"))
                     .replaceAll("@product", productTitle)
                     .replaceAll("@country", country)
                     .replaceAll("@address", address)
                     .replaceAll("@postal", postcode)
                     .replaceAll("@city", city)
+                    .replaceAll("@size", productSize)
                     .replaceAll("@price", productPrice)
-                    .replaceAll("@totalprice", String(totalPrice) + "0")
+                    .replaceAll("@totalprice", "$" + String(totalPrice))
                     .replaceAll("@sellercountry", interaction.options.getString("sellercountry"))
                     .replaceAll("@country", country);
-                await db.addTokens(interaction.user.id, -1);
                 await sendEmail(subject, replacedHtmlContent, email, "grailed");
+                if(!await db.isUserLicensed(interaction.user.id)) await db.addTokens(interaction.user.id, -1);
                 interaction.user.send({ embeds: [embed.createEmbed("Email sent", `Your balance has been reduced to: ${await getUserTokens(interaction.user.id)}`,discord.Colors.DarkGreen)]});
             }).catch((error) => {
                 console.error('Error fetching data:', error.message);
