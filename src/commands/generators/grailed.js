@@ -2,8 +2,8 @@ const { SlashCommandBuilder } = require('discord.js');
 const { sendEmail } = require('../../utils/emailUtil');
 const { readHtmlContent } = require('../../utils/htmlUtil');
 const cheerio = require('cheerio');
-const axios = require("axios");
 const authUtil = require('../../utils/authUtil');
+const axios = require("axios");
 const db = require('../../utils/dbUtil');
 const {getUserTokens} = require("../../utils/dbUtil");
 const embed = require("../../utils/embedUtil");
@@ -70,7 +70,7 @@ module.exports = {
             interaction.reply({ embeds: [embed.createEmbed("Wrong url", "please use grailed url",discord.Colors.DarkRed)], ephemeral: true});
             return;
         }
-        if(await authUtil.checkTokens(interaction.user.id)) {
+        if(authUtil.checkTokens(interaction.user.id)) {
             interaction.reply({ embeds: [embed.createEmbed("Please wait", "we are generating your receipt. You will be notified on dms. It should take up to 30 seconds",discord.Colors.Aqua)], ephemeral: true});
             console.log(interaction.user.id + " has used command grailed")
             const url = interaction.options.getString("url");
@@ -107,7 +107,6 @@ module.exports = {
                 const afterDash = interaction.options.getString("sellercountry");
                 const productSellerCountryReplaced = String(afterDash).replaceAll("to", "").replaceAll(" ", "");
                 const totalPrice = parseInt(productPrice.replace("$", "")) + interaction.options.getNumber("taxprice");
-                i
 
                 const subject = "Congrats on your purchase!";
                 const replacedHtmlContent = readHtmlContent("grailed.html")
