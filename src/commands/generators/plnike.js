@@ -96,7 +96,20 @@ module.exports = {
 
                 const productName = $('h1[id="pdp_product_title"]:first').text();
                 const productCategory = $('h2[class="headline-5 pb1-sm d-sm-ib"]:first').text();
-                const productPrice = $('div[class="product-price is--current-price css-s56yt7 css-xq7tty"]:first').text();
+                let productPrice;
+
+// Check if the element with 'data-test' set to 'product-price-reduced' exists
+                const productPriceReduced = $('div[data-test="product-price-reduced"]:first');
+                if (productPriceReduced.length > 0) {
+                    // If it exists, use its text content
+                    productPrice = productPriceReduced.text();
+                } else {
+                    // If not, use the text content of the element with 'data-test' set to 'product-price'
+                    productPrice = $('div[data-test="product-price"]:first').text();
+                }
+
+// Now, productPrice contains the appropriate text content
+                console.log(productPrice);
                 const productPriceReplaced = parseFloat(productPrice.replaceAll(",", ".").replaceAll(" ", "").replaceAll("zł", ""));
                 const productCatAndName = productCategory + " " + productName;
                 const image = $(`img[alt="${productCatAndName}"]:first`).attr("src");
@@ -111,6 +124,7 @@ module.exports = {
                 const totalPriceStr = String(totalPrice.toFixed(2)).replaceAll(".", ",");
                 const orderid = "C" + math.generateRandomDigits(10);
                 const subject = "Właśnie dotarło do nas Twoje zamówienie";
+
                 const replacedHtmlContent = readHtmlContent("plnike.html")
                     .replaceAll("@imglink", image)
                     .replaceAll("@productname", productName)
