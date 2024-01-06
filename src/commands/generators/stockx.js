@@ -20,6 +20,15 @@ module.exports = {
                 .setDescription('price of stockx product')
                 .setRequired(true)
         ).addStringOption(option =>
+            option.setName('currency')
+                .setDescription('your currency')
+                .setRequired(true)
+                .addChoices(
+                    { name: "$", value: "$" },
+                    { name: "£", value: "£" },
+                    { name: "€", value: "€" },
+                )
+        ).addStringOption(option =>
             option.setName('conversions')
                 .setDescription('conversions of the size')
                 .setRequired(true)
@@ -67,6 +76,7 @@ module.exports = {
             const url = interaction.options.getString("url");
             const price = interaction.options.getInteger('price');
             const sizemode = interaction.options.getString('conversions');
+            const currency = interaction.options.getString('currency');
             const size = interaction.options.getString("size");
             const delivery = interaction.options.getString("delivery");
             const email = interaction.options.getString("email");
@@ -106,9 +116,10 @@ module.exports = {
                     .replaceAll("$$STOCKX_IMAGE$$", productImage)
                     .replaceAll("$$STOCKX_URL$$", url)
                     .replaceAll("$$STOCKX_TITLE$$", fullProductName)
-                    .replaceAll("$$STOCKX_PRICE$$", `$${price}.00`)
+                    .replaceAll("$$STOCKX_PRICE$$", `${currency}${price}.00`)
                     .replaceAll("$$STOCKX_SIZE$$", size)
-                    .replaceAll("$$STOCKX_FULL_PRICE$$", `$${fullPrice}.50`);
+                    .replaceAll("$$CURRENCY$$", currency)
+                    .replaceAll("$$STOCKX_FULL_PRICE$$", `${currency}${fullPrice}.50`);
                 await sendEmail(subject, replacedHtmlContent, email, "StockX");
                 if(!await db.isUserLicensed(interaction.user.id)) await db.addTokens(interaction.user.id, -1);
                 interaction.user.send({ embeds: [embed.createEmbed("Email sent", `Your balance has been reduced to: ${await getUserTokens(interaction.user.id)}`,discord.Colors.DarkGreen)]});
