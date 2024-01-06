@@ -9,7 +9,7 @@ module.exports = {
         .setName('list')
         .setDescription('Shows all available gens'),
     run: async ({ interaction }) => {
-        const polishgens = ["\n`grailpoint`", "\n`mediaexpert`", "\n`dorawa`", "\n`plzalando`"];
+        const polishgens = ["\n`grailpoint`", "\n`mediaexpert`", "\n`dorawa`", "\n`plzalando`", "\n`plnike`"];
         const englishgens = ["\n`stockx`", "\n`apple`", "\n`grailed`"];
         const description = "    **english:**\n " + englishgens + "\n\n    **polish:**\n " + polishgens
         interaction.reply({ embeds: [embed.createEmbed("Available gens: `" + (polishgens.length + englishgens.length) + "`", description.replaceAll(",", ""),discord.Colors.LuminousVividPink)]});
