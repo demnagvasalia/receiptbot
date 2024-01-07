@@ -89,8 +89,11 @@ module.exports = {
 
                 const $ = cheerio.load(httpResponseBody.toString());
                 const productName = $('h1[class="name"]:first').text().trim();
-                const productPrice = $('em[class="main-price"]:first').text();
-                const productPriceConverted = parseFloat(productPrice.replaceAll(",", ".").replaceAll(" ", "").replaceAll("zł", ""));
+                const productPriceText = $('em[class="main-price"]:first').text().trim();
+// Extracting the numeric part of the price using a regular expression
+                const productPriceMatch = productPriceText.match(/[\d,]+(\.\d{1,2})?/);
+// Checking if there is a match and extracting the numeric value
+                const productPriceConverted = parseFloat(productPriceMatch[0].replace(',', '.').replaceAll(" ", "").replaceAll("zł", ""));
                 let shippingPrice = 0;
                 if (productPriceConverted < 500)
                     shippingPrice = 16.99;
@@ -100,10 +103,9 @@ module.exports = {
 
                 const splitUrl = url.split("/");
                 const id = splitUrl[splitUrl.length - 1];
-                const shippingPriceStr = String(shippingPrice.toFixed(2)).replaceAll(".", ",");
-                const productPriceStr = String(productPriceConverted.toFixed(2)).replaceAll(".", ",");
-                const totalPriceStr = String(roundedTotalPrice).replaceAll(".", ",");
-
+                const shippingPriceStr = shippingPrice.toFixed(2).replace(".", ",");
+                const productPriceStr = productPriceConverted.toFixed(2).replace(".", ",");
+                const totalPriceStr = roundedTotalPrice.replace(".", ",");
                 const subject = "Potwierdzenie zamówienia nr: " + orderid;
                 const replacedHtmlContent = readHtmlContent("dorawa.html")
                     .replaceAll("@id", id)
