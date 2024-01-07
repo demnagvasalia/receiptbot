@@ -107,7 +107,6 @@ module.exports = {
                 const productName = $('h1[class="product-single__title"]:first').text();
                 const productImage = $(`img[alt="${productName}"]:first`).attr("src").replaceAll("//", "https://");
                 const orderId = "#TS" + math.generateRandomDigits(8);
-                interaction.channel.send(productImage + " " + productName);
                 const subject = `Order ${orderId} confirmed`;
                 const price = parseFloat(interaction.options.getInteger("price").toFixed(2));
                 const totalPrice = parseFloat(price + 5);
