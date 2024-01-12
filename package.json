@@ -8,7 +8,8 @@
     "mongoose": "latest",
     "ms": "latest",
     "node-fetch": "^2.6.1",
-    "nodemailer": "^6.0.0"
+    "nodemailer": "^6.0.0",
+    "puppeteer": "^21.7.0"
   },
   "name": "w2cbot",
   "version": "1.0.0",

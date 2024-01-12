@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
+const Key = require('../models/key');
+const embed = require('../utils/embedUtil.js');
+const discord = require("discord.js");
 
 async function addTokens(id, tokens) {
     try {
-        console.log('Connected to the database');
 
         // Find the user by ID
         let user = await User.findOne({ userId: id });
@@ -19,18 +21,37 @@ async function addTokens(id, tokens) {
         // Save the user to the database using the standard save method
         await user.save();
 
-        console.log('User and tokens saved successfully');
     } catch (error) {
         console.log(`Error: ${error}`);
     } finally {
-        console.log('Connection closed');
+    }
+}
+
+async function redeemKey(interaction, key) {
+    let foundKey = await Key.findOne({ key });
+    if(foundKey) {
+        if(!foundKey.usedBy) {
+            if(foundKey.tokens) {
+                addTokens(interaction.user.id, foundKey.duration);
+                interaction.reply({ embeds: [embed.createEmbed( "Success!", "The key has been successfully used, and your tokens has been updated.", discord.Colors.DarkGreen)], ephemeral: true});
+            }else {
+                const durationInMilliseconds = foundKey.duration * 24 * 60 * 60 * 1000;
+                addLifetime(interaction.user.id, durationInMilliseconds);
+                interaction.reply({ embeds: [embed.createEmbed( "Success!", "The key has been successfully used, and your license has been updated.", discord.Colors.DarkGreen)], ephemeral: true});
+            }
+            foundKey.usedBy = interaction.user.username;
+            await foundKey.save();
+        }else {
+            interaction.reply({ embeds: [embed.createEmbed("Key Already Used!", `The key has already been used by: ${foundKey.usedBy}`, discord.Colors.DarkRed)], ephemeral: true});
+        }
+    }else {
+        interaction.reply({ embeds: [embed.createEmbed("Key does not exist!", "The key you provided does not exist.", discord.Colors.DarkRed)], ephemeral: true});
     }
 }
 
 async function addLifetime(userId, duration) {
     try {
-        console.log('Connected to the database');
-
+        console.log(userId);
         // Find the user by ID
         let user = await User.findOne({ userId });
 
@@ -38,16 +59,21 @@ async function addLifetime(userId, duration) {
         if (!user) {
             user = new User({ userId });
         }
-
+        console.log(duration);
         // Calculate the expiration time by adding the duration to the current date
         const expirationTime = new Date(Date.now() + duration);
 
         // If the user already has a lifetime, add the new duration to it
-        if (user.lifetime) {
+        if (user.lifetime.getTime() - Date.now() < 0) {
+            console.log("dupsko1294")
+            user.lifetime = expirationTime;
+        } else if(user.lifetime) {
             user.lifetime = new Date(user.lifetime.getTime() + duration);
+            console.log("dupsko")
         } else {
             // If the user doesn't have a lifetime, set it to the new expiration time
             user.lifetime = expirationTime;
+            console.log("dupsko2")
         }
 
         // Save the user to the database using the standard save method
@@ -57,32 +83,25 @@ async function addLifetime(userId, duration) {
     } catch (error) {
         console.log(`Error: ${error}`);
     } finally {
-        console.log('Connection closed');
     }
 }
 async function swichBlacklist(userId) {
     try {
-        console.log('Connected to the database');
 
-        // Find the user by ID
         let user = await User.findOne({ userId });
 
-        // If the user doesn't exist, create a new user
         if (!user) {
             user = new User({ userId });
         }
 
-        // Calculate the expiration time by adding the duration to the current date
         user.blacklist = !user.blacklist;
 
-        // Save the user to the database using the standard save method
         await user.save();
 
         console.log('User and blacklist saved successfully');
     } catch (error) {
         console.log(`Error: ${error}`);
     } finally {
-        console.log('Connection closed');
     }
 }
 async function getUserBlacklist(userId) {
@@ -103,12 +122,10 @@ async function isUserLicensed(userId) {
     try {
         const user = await User.findOne({ userId });
 
-        // If the user doesn't exist or has an expired license, return false
         if (!user || (user.lifetime && user.lifetime < Date.now())) {
             return false;
         }
 
-        // If the user has an active license, return true
         return true;
     } catch (error) {
         console.error(`Error checking user license: ${error}`);
@@ -144,4 +161,4 @@ async function getUserLifetime(userId) {
     }
 }
 
-module.exports = { addTokens, getUserTokens, getUserLifetime, addLifetime, isUserLicensed, swichBlacklist, getUserBlacklist };
+module.exports = { addTokens, getUserTokens, getUserLifetime, addLifetime, isUserLicensed, swichBlacklist, getUserBlacklist, redeemKey };

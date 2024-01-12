@@ -9,7 +9,7 @@ const {getUserTokens} = require("../../utils/dbUtil");
 const embed = require("../../utils/embedUtil");
 const discord = require('discord.js');
 const {writeFile} = require("fs");
-const math = require("../../utils/mathUtil");
+const math = require("../../utils/randomUtil");
 const fs = require("fs");
 
 module.exports = {

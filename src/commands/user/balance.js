@@ -29,10 +29,14 @@ module.exports = {
                     const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-                    // Format the remaining time
-                    const formattedRemainingTime = `${days} days ${hours} hours ${minutes} minutes`;
-                    license = `(expires in: ${formattedRemainingTime})`;
+                    let formattedRemainingTime = "";
+                    if(days > 365) {
+                        // Format the remaining time
+                        formattedRemainingTime = "lifetime";
+                    }else {
+                        formattedRemainingTime = `(expires in: ${days} days ${hours} hours ${minutes} minutes)`;
+                    }
+                    license = `${formattedRemainingTime}`;
                 } else {
                     license = "";
                 }

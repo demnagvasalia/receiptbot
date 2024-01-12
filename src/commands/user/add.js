@@ -3,6 +3,7 @@ const { addTokens, getUserTokens, getUserLifetime, addLifetime } = require('../.
 const authUtil = require('../../utils/authUtil.js');
 const embed = require("../../utils/embedUtil");
 const discord = require("discord.js");
+const keyGen = require('../../keys/keyGenerator.js');
 
 module.exports = {
     data: new SlashCommandBuilder()

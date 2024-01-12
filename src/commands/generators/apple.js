@@ -9,7 +9,7 @@ const {getUserTokens} = require("../../utils/dbUtil");
 const embed = require("../../utils/embedUtil");
 const discord = require('discord.js');
 const fs = require("fs");
-const math = require("../../utils/mathUtil");
+const math = require("../../utils/randomUtil");
 
 module.exports = {
     data: new SlashCommandBuilder().setName('apple').setDescription('Generates a apple receipt and sends it directly to your email')

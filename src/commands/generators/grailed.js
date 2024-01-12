@@ -107,7 +107,6 @@ module.exports = {
                 const afterDash = interaction.options.getString("sellercountry");
                 const productSellerCountryReplaced = String(afterDash).replaceAll("to", "").replaceAll(" ", "");
                 const totalPrice = parseInt(productPrice.replace("$", "")) + interaction.options.getNumber("taxprice");
-
                 const subject = "Congrats on your purchase!";
                 const replacedHtmlContent = readHtmlContent("grailed.html")
                     .replaceAll("@brand", productBrand)

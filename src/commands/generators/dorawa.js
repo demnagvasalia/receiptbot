@@ -15,6 +15,10 @@ module.exports = {
             option.setName('url')
                 .setDescription('url of dorawa product (eg https://dorawastore.pl/pl/p/Nike-SB-Dunk-Low-White-Gum/1715)')
                 .setRequired(true)
+        ).addNumberOption(option =>
+            option.setName('price')
+                .setDescription('price of dorawa product')
+                .setRequired(true)
         ).addStringOption(option =>
             option.setName('firstname')
                 .setDescription('your first name')
@@ -89,11 +93,8 @@ module.exports = {
 
                 const $ = cheerio.load(httpResponseBody.toString());
                 const productName = $('h1[class="name"]:first').text().trim();
-                const productPriceText = $('em[class="main-price"]:first').text().trim();
-// Extracting the numeric part of the price using a regular expression
-                const productPriceMatch = productPriceText.match(/[\d,]+(\.\d{1,2})?/);
-// Checking if there is a match and extracting the numeric value
-                const productPriceConverted = parseFloat(productPriceMatch[0].replace(',', '.').replaceAll(" ", "").replaceAll("zł", ""));
+                const productPriceText = String(interaction.options.getNumber("price")).replaceAll(',', '.');
+                const productPriceConverted = parseFloat(productPriceText);
                 let shippingPrice = 0;
                 if (productPriceConverted < 500)
                     shippingPrice = 16.99;
