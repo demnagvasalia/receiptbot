@@ -29,12 +29,21 @@ async function addTokens(id, tokens) {
 
 async function redeemKey(interaction, key) {
     let foundKey = await Key.findOne({ key });
+    const customerRole = interaction.guild.roles.cache.find(role => role.name === 'Customer');
     if(foundKey) {
         if(!foundKey.usedBy) {
             if(foundKey.tokens) {
                 addTokens(interaction.user.id, foundKey.duration);
                 interaction.reply({ embeds: [embed.createEmbed( "Success!", "The key has been successfully used, and your tokens has been updated.", discord.Colors.DarkGreen)], ephemeral: true});
+                // Check if the "Customer" role exists
+                if (customerRole) {
+                    await interaction.member.roles.add(customerRole);
+                }
             }else {
+                // Check if the "Customer" role exists
+                if (customerRole) {
+                    await interaction.member.roles.add(customerRole);
+                }
                 const durationInMilliseconds = foundKey.duration * 24 * 60 * 60 * 1000;
                 addLifetime(interaction.user.id, durationInMilliseconds);
                 interaction.reply({ embeds: [embed.createEmbed( "Success!", "The key has been successfully used, and your license has been updated.", discord.Colors.DarkGreen)], ephemeral: true});
