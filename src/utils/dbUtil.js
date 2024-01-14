@@ -81,9 +81,10 @@ async function addLifetime(userId, duration) {
         }else {
             if (user.lifetime.getTime() - Date.now() < 0) {
                 user.lifetime = expirationTime;
-            }
-            if (user.lifetime.getTime() - Date.now() > 0) {
-                user.lifetime = new Date(user.lifetime.getTime() + duration);
+            }else {
+                if (user.lifetime.getTime() - Date.now() > 0) {
+                    user.lifetime = new Date(user.lifetime.getTime() + duration);
+                }
             }
         }
         await user.save();
