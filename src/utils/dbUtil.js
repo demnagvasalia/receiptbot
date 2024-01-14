@@ -74,6 +74,7 @@ async function addLifetime(userId, duration) {
 
         // If the user already has a lifetime, add the new duration to it
         if(!user.lifetime) {
+            console.log("dupsko1424")
             user.lifetime = expirationTime;
             await user.save();
             return;
