@@ -77,12 +77,13 @@ async function addLifetime(userId, duration) {
             user.lifetime = expirationTime;
             await user.save();
             return;
-        }
-        if(user.lifetime.getTime() - Date.now() < 0) {
-            user.lifetime = expirationTime;
-        }
-        if(user.lifetime.getTime() - Date.now() > 0) {
-            user.lifetime = new Date(user.lifetime.getTime() + duration);
+        }else {
+            if (user.lifetime.getTime() - Date.now() < 0) {
+                user.lifetime = expirationTime;
+            }
+            if (user.lifetime.getTime() - Date.now() > 0) {
+                user.lifetime = new Date(user.lifetime.getTime() + duration);
+            }
         }
         await user.save();
         // Save the user to the database using the standard save method
