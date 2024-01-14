@@ -73,7 +73,7 @@ async function addLifetime(userId, duration) {
         const expirationTime = new Date(Date.now() + duration);
 
         // If the user already has a lifetime, add the new duration to it
-        if(isNaN(user.lifetime.getTime())) {
+        if(!user.lifetime) {
             user.lifetime = expirationTime;
             await user.save();
             return;
@@ -84,7 +84,7 @@ async function addLifetime(userId, duration) {
         if(user.lifetime.getTime() - Date.now() > 0) {
             user.lifetime = new Date(user.lifetime.getTime() + duration);
         }
-
+        await user.save();
         // Save the user to the database using the standard save method
 
         console.log('User and lifetime saved successfully');
