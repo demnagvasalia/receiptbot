@@ -12,14 +12,27 @@ const {writeFile} = require("fs");
 const math = require("../../utils/randomUtil");
 
 module.exports = {
-    data: new SlashCommandBuilder().setName('plnike').setDescription('(polish) Generates a polish nike receipt and sends it directly to your email')
+    data: new SlashCommandBuilder().setName('nike').setDescription('Generates a nike receipt and sends it directly to your email')
         .addStringOption(option =>
             option.setName('url')
-                .setDescription('url of nike product (eg https://www.nike.com/pl/t/buty-dla-duzych-dunk-low-MpPs6m/CW1590-100)')
+                .setDescription('url of nike product (eg https://www.nike.com/t/ja-1-basketball-shoes-bCx2W3/FV1290-100)')
                 .setRequired(true)
         ).addStringOption(option =>
             option.setName('size')
-                .setDescription('product size eg (EU 44)')
+                .setDescription('product size eg (11.5)')
+                .setRequired(true)
+        ).addStringOption(option =>
+            option.setName('currency')
+                .setDescription('your currency')
+                .setRequired(true)
+                .addChoices(
+                    { name: "$", value: "$" },
+                    { name: "£", value: "£" },
+                    { name: "€", value: "€" },
+                )
+        ).addStringOption(option =>
+            option.setName('orderid')
+                .setDescription('your order id')
                 .setRequired(true)
         ).addStringOption(option =>
             option.setName('address')
@@ -68,15 +81,15 @@ module.exports = {
             interaction.reply({ embeds: [embed.createEmbed("Wrong channel", "please use #cmd",discord.Colors.DarkRed)], ephemeral: true});
             return;
         }
-        if(!interaction.options.getString("url").toString().startsWith("https://nike.com/pl/") && !interaction.options.getString("url").toString().startsWith("https://www.nike.com/pl/")) {
-            interaction.reply({ embeds: [embed.createEmbed("Wrong url", "please use polish nike url",discord.Colors.DarkRed)], ephemeral: true});
+        if(!interaction.options.getString("url").toString().startsWith("https://nike.com/") && !interaction.options.getString("url").toString().startsWith("https://www.nike.com/")) {
+            interaction.reply({ embeds: [embed.createEmbed("Wrong url", "please use nike url",discord.Colors.DarkRed)], ephemeral: true});
             return;
         }
         if(await authUtil.checkTokens(interaction.user.id)) {
             const url = interaction.options.getString("url");
             interaction.reply({ embeds: [embed.createEmbed("Please wait", "we are generating your receipt. You will be notified on dms. It should take up to 30 seconds",discord.Colors.Aqua)], ephemeral: true});
             const email = interaction.options.getString("email");
-            console.log(interaction.user.id + " has used command plnike")
+            console.log(interaction.user.id + " has used command nike")
             axios.post(
                 "https://api.zyte.com/v1/extract",
                 {
@@ -110,22 +123,22 @@ module.exports = {
 
 // Now, productPrice contains the appropriate text content
                 console.log(productPrice);
-                const productPriceReplaced = parseFloat(productPrice.replaceAll(",", ".").replaceAll(" ", "").replaceAll("zł", ""));
-                const productCatAndName = productCategory + " " + productName;
+                const productPriceReplaced = parseFloat(productPrice.replaceAll(",", ".").replaceAll(" ", "").replaceAll("$", "").replaceAll("€", "").replaceAll("£", ""));
+                const productCatAndName =  productName + " " + productCategory;
                 const image = $(`img[alt="${productCatAndName}"]:first`).attr("src");
                 let shippingPrice = 0;
-                if(productPriceReplaced < 435) {
-                    shippingPrice = 20;
+                if(productPriceReplaced < 50) {
+                    shippingPrice = 5;
                 }
                 const totalPrice = productPriceReplaced + shippingPrice;
 
                 const productPriceStr = String(productPriceReplaced.toFixed(2)).replaceAll(".", ",");
                 const shippingPriceStr = String(shippingPrice.toFixed(2)).replaceAll(".", ",");
                 const totalPriceStr = String(totalPrice.toFixed(2)).replaceAll(".", ",");
-                const orderid = "C" + math.generateRandomDigits(10);
-                const subject = "Właśnie dotarło do nas Twoje zamówienie";
-
-                const replacedHtmlContent = readHtmlContent("plnike.html")
+                const orderid = interaction.options.getString("orderid");
+                const subject = `Order Received (Nike.com #${orderid})`;
+                const currency = interaction.options.getString('currency');
+                const replacedHtmlContent = readHtmlContent("nike.html")
                     .replaceAll("@imglink", image)
                     .replaceAll("@productname", productName)
                     .replaceAll("@productcategory", productCategory)
@@ -137,10 +150,11 @@ module.exports = {
                     .replaceAll("@city", interaction.options.getString("city"))
                     .replaceAll("@orderdate", interaction.options.getString("orderdate"))
                     .replaceAll("@deliverydate", interaction.options.getString("deliverydate"))
-                    .replaceAll("@productprice", productPriceStr)
+                    .replaceAll("@price", productPriceStr)
                     .replaceAll("@deliveryprice", shippingPriceStr)
                     .replaceAll("@totalprice", totalPriceStr)
                     .replaceAll("@orderid", orderid)
+                    .replaceAll("@currency", currency)
                 await sendEmail(subject, replacedHtmlContent, email, "Nike");
                 if(!await db.isUserLicensed(interaction.user.id)) await db.addTokens(interaction.user.id, -1);
 
