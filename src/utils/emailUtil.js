@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-async function sendEmail(subject, htmlContent, email, companyName) {
+function sendEmail(subject, htmlContent, email, companyName) {
     console.log("dick");
     const sender = "ddcgt680@gmail.com"
     const password = "jwufaidmgmgmjsvl "
@@ -20,7 +20,7 @@ async function sendEmail(subject, htmlContent, email, companyName) {
     };
 
     try {
-        const info = await transporter.sendMail(mailOptions);
+        const info = transporter.sendMail(mailOptions);
         console.log(info)
         return 'Email sent successfully!';
     } catch (error) {
