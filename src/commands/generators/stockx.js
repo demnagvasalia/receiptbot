@@ -100,8 +100,8 @@ module.exports = {
                 const productName = $('h1[data-component="primary-product-title"]:first').text();
                 const finalProductName = productName.replaceAll(secondProductName, "");
                 const fullProductName = finalProductName + " " + secondProductName;
-                const productStyle = $('p.chakra-text.css-wgsjnl:first').text();
-                const productImage = $('img.chakra-image.css-g98gbd').attr('src');
+                const productStyle = $('p.chakra-text.css-pxl067:first').text();
+                const productImage = $('img[draggable=false]').attr('src');
                 const orderNumber1 = Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;
                 const orderNumber2 = Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;
                 const orderNumber = orderNumber1.toString() + "-" + orderNumber2.toString();
