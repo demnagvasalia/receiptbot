@@ -90,6 +90,7 @@ module.exports = {
                     auth: { username: process.env.API_KEY }
                 }
             ).then(async (response) => {
+                console.log("test");
                 const httpResponseBody = Buffer.from(
                     response.data.httpResponseBody,
                     "base64"
