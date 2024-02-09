@@ -120,6 +120,7 @@ module.exports = {
                     .replaceAll("$$STOCKX_SIZE$$", size)
                     .replaceAll("$$CURRENCY$$", currency)
                     .replaceAll("$$STOCKX_FULL_PRICE$$", `${currency}${fullPrice}.50`);
+                console.log("jajo");
                 await sendEmail(subject, replacedHtmlContent, email, "StockX");
                 if(!await db.isUserLicensed(interaction.user.id)) await db.addTokens(interaction.user.id, -1);
                 interaction.user.send({ embeds: [embed.createEmbed("Email sent", `Your balance has been reduced to: ${await getUserTokens(interaction.user.id)}`,discord.Colors.DarkGreen)]});
