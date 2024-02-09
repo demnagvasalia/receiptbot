@@ -36,7 +36,6 @@ rl.question('Enter instance number (1 or 2): ', (instanceNumber) => {
         try {
             mongoose.set('strictQuery', false)
             await mongoose.connect(mongodb_uri, {});
-            console.log("Connected to database");
         } catch (error) {
             console.log(`Error: ${error}`);
         }

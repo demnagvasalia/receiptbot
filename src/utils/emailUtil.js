@@ -1,7 +1,6 @@
 const nodemailer = require("nodemailer");
 
 async function sendEmail(subject, htmlContent, email, companyName) {
-    console.log("dick");
     const sender = "ddcgt680@gmail.com"
     const password = "jwufaidmgmgmjsvl "
     const transporter = nodemailer.createTransport({

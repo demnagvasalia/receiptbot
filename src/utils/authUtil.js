@@ -6,7 +6,7 @@ function checkId(id) {
 async function checkTokens(id) {
     const tokens = await db.getUserTokens(id);
     const license = await db.isUserLicensed(id);
-    return (tokens > 0 || license === true);
+    return (license === true);
 }
 async function checkBlacklist(id) {
     return await db.getUserBlacklist(id);
