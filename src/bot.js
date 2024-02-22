@@ -21,6 +21,11 @@ rl.question('Enter instance number (1 or 2): ', (instanceNumber) => {
     let mongodb_uri = ""
     let bot_token = ""
     switch(instanceNumber) {
+        case "test": {
+            mongodb_uri = process.env.DB_TEST
+            bot_token = process.env.BOT_TEST
+            break;
+        }
         case "1": {
             mongodb_uri = process.env.DB_FIRST
             bot_token = process.env.BOT_FIRST

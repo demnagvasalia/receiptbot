@@ -49,6 +49,10 @@ module.exports = {
                 .setDescription('date of delivery. (eg 10/10/2023)')
                 .setRequired(true)
         ).addStringOption(option =>
+            option.setName('styleid')
+                .setDescription('Style id of your product')
+                .setRequired(true)
+        ).addStringOption(option =>
             option.setName('email')
                 .setDescription('email address where receipt will be sent')
                 .setRequired(true)
@@ -100,7 +104,7 @@ module.exports = {
                 const productName = $('h1[data-component="primary-product-title"]:first').text();
                 const finalProductName = productName.replaceAll(secondProductName, "");
                 const fullProductName = finalProductName + " " + secondProductName;
-                const productStyle = $('p.chakra-text.css-pxl067:first').text();
+                const productStyle = interaction.options.getString("styleid");
                 const productImage = $('img[draggable=false]').attr('src');
                 const orderNumber1 = Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;
                 const orderNumber2 = Math.floor(Math.random() * (99999999 - 10000000 + 1)) + 10000000;

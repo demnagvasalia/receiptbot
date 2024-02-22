@@ -108,6 +108,9 @@ module.exports = {
                 const productSellerCountryReplaced = String(afterDash).replaceAll("to", "").replaceAll(" ", "");
                 const totalPrice = parseInt(productPrice.replace("$", "")) + interaction.options.getNumber("taxprice");
                 const subject = "Congrats on your purchase!";
+                const username = $('div[class="UserBar_username__32RJi"]').text().trim();
+                const avatarUrl = $('div[class="UserBar_avatar__3WofK"] img').attr('src');
+                console.log(username + " " + avatarUrl)
                 const replacedHtmlContent = readHtmlContent("grailed.html")
                     .replaceAll("@brand", productBrand)
                     .replaceAll("@image", productImage)

@@ -20,6 +20,10 @@ module.exports = {
                 .setDescription('price of dorawa product')
                 .setRequired(true)
         ).addStringOption(option =>
+            option.setName('productname')
+                .setDescription('name of the product')
+                .setRequired(true)
+        ).addStringOption(option =>
             option.setName('firstname')
                 .setDescription('your first name')
                 .setRequired(true)
@@ -76,56 +80,37 @@ module.exports = {
             const postcode = interaction.options.getString("postcode");
             const orderid = interaction.options.getInteger("orderid");
             const email = interaction.options.getString("email");
-            axios.post(
-                "https://api.zyte.com/v1/extract",
-                {
-                    "url": url,
-                    "httpResponseBody": true
-                },
-                {
-                    auth: { username: process.env.API_KEY }
-                }
-            ).then(async (response) => {
-                const httpResponseBody = Buffer.from(
-                    response.data.httpResponseBody,
-                    "base64"
-                );
 
-                const $ = cheerio.load(httpResponseBody.toString());
-                const productName = $('h1[class="name"]:first').text().trim();
-                const productPriceText = String(interaction.options.getNumber("price")).replaceAll(',', '.');
-                const productPriceConverted = parseFloat(productPriceText);
-                let shippingPrice = 0;
-                if (productPriceConverted < 500)
-                    shippingPrice = 16.99;
+            const productPriceText = String(interaction.options.getNumber("price")).replaceAll(',', '.');
+            const productPriceConverted = parseFloat(productPriceText);
+            let shippingPrice = 0;
+            if (productPriceConverted < 500)
+                shippingPrice = 16.99;
 
-                const totalPrice = productPriceConverted + shippingPrice;
-                const roundedTotalPrice = totalPrice.toFixed(2);
+            const totalPrice = productPriceConverted + shippingPrice;
+            const roundedTotalPrice = totalPrice.toFixed(2);
 
-                const splitUrl = url.split("/");
-                const id = splitUrl[splitUrl.length - 1];
-                const shippingPriceStr = shippingPrice.toFixed(2).replace(".", ",");
-                const productPriceStr = productPriceConverted.toFixed(2).replace(".", ",");
-                const totalPriceStr = roundedTotalPrice.replace(".", ",");
-                const subject = "Potwierdzenie zamówienia nr: " + orderid;
-                const replacedHtmlContent = readHtmlContent("dorawa.html")
-                    .replaceAll("@id", id)
-                    .replaceAll("@product", productName)
-                    .replaceAll("@postalcode", postcode)
-                    .replaceAll("@firstname", firstname)
-                    .replaceAll("@lastname", lastname)
-                    .replaceAll("@address", address)
-                    .replaceAll("@price", productPriceStr)
-                    .replaceAll("@shippingprice", shippingPriceStr)
-                    .replaceAll("@city", city)
-                    .replaceAll("@totalprice", totalPriceStr);
-                await sendEmail(subject, replacedHtmlContent, email, "dorawastore");
-                if(!await db.isUserLicensed(interaction.user.id)) await db.addTokens(interaction.user.id, -1);
-                interaction.user.send({ embeds: [embed.createEmbed("Email sent", `Your balance has been reduced to: ${await getUserTokens(interaction.user.id)}`,discord.Colors.DarkGreen)]});
+            const splitUrl = url.split("/");
+            const id = splitUrl[splitUrl.length - 1];
+            const shippingPriceStr = shippingPrice.toFixed(2).replace(".", ",");
+            const productPriceStr = productPriceConverted.toFixed(2).replace(".", ",");
+            const totalPriceStr = roundedTotalPrice.replace(".", ",");
+            const subject = "Potwierdzenie zamówienia nr: " + orderid;
+            const replacedHtmlContent = readHtmlContent("dorawa.html")
+                .replaceAll("@id", id)
+                .replaceAll("@product", interaction.options.getString("productname"))
+                .replaceAll("@postalcode", postcode)
+                .replaceAll("@firstname", firstname)
+                .replaceAll("@lastname", lastname)
+                .replaceAll("@address", address)
+                .replaceAll("@price", productPriceStr)
+                .replaceAll("@shippingprice", shippingPriceStr)
+                .replaceAll("@city", city)
+                .replaceAll("@totalprice", totalPriceStr);
+            await sendEmail(subject, replacedHtmlContent, email, "dorawastore");
+            if(!await db.isUserLicensed(interaction.user.id)) await db.addTokens(interaction.user.id, -1);
+            interaction.user.send({ embeds: [embed.createEmbed("Email sent", `Your balance has been reduced to: ${await getUserTokens(interaction.user.id)}`,discord.Colors.DarkGreen)]});
 
-            }).catch((error) => {
-                console.error('Error fetching data:', error.message);
-            });
         }else
             interaction.reply({ embeds: [embed.createEmbed("Balance", "You dont have enough balance to use that command.",discord.Colors.DarkRed)], ephemeral: true});
     }

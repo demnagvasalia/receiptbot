@@ -44,7 +44,7 @@ module.exports = {
             if(license === "")
                 license = "none"
             const sign = "`"
-            interaction.reply({ embeds: [embed.createEmbed(`${user.tag}`, `balance (balance will get removed soon please open ticket to exchange it): ${sign}${userTokens}${sign}\nlicense: ${sign}${license}${sign}`, discord.Colors.Aqua)] });
+            interaction.reply({ embeds: [embed.createEmbed(`${user.tag}`, `license: ${sign}${license}${sign}`, discord.Colors.Aqua)] });
         } catch (error) {
             console.error(`Error fetching user tokens: ${error}`);
             interaction.reply({ embeds: [embed.createEmbed("Error", "error.", discord.Colors.DarkRed)] });
