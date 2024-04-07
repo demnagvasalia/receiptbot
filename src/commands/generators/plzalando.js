@@ -92,10 +92,6 @@ module.exports = {
                     response.data.httpResponseBody,
                     "base64"
                 );
-                const filePath = 'zalando.html';
-
-// Write the HTML content to the file
-                fs.writeFileSync(filePath, httpResponseBody);
                 const $ = cheerio.load(httpResponseBody.toString());
                 //sDq_FX lystZ1 FxZV-M _2Pvyxl JT3_zV EKabf7 mo6ZnF _1RurXL mo6ZnF _7ZONEy
                 const productBrand = $('h3[class="FtrEr_ QdlUSH FxZV-M HlZ_Tf _5Yd-hZ"]:first').text();

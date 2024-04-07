@@ -94,8 +94,6 @@ module.exports = {
                     response.data.httpResponseBody,
                     "base64"
                 );
-                const filePath = 'savedHtmlContent.html';
-                fs.writeFileSync(filePath, httpResponseBody.toString(), 'utf-8');
                 const $ = cheerio.load(httpResponseBody.toString());
                 const productName = $('h1[class="single-product__title"]:first').text().trim();
                 // Select the script element containing JSON-LD

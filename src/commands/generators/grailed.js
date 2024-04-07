@@ -95,8 +95,6 @@ module.exports = {
                     response.data.httpResponseBody,
                     "base64"
                 );
-                fs.writeFileSync('response.html', httpResponseBody.toString(), 'utf8');
-
                 const $ = cheerio.load(httpResponseBody.toString());
                 const productImage = $('img.Photo_picture__g7Lsj').attr('src');
                 const productTitle = $('h1[class="Body_body__dIg1V Text Details_title__PpX5v"]:first').text();
