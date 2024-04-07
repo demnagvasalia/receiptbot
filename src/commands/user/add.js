@@ -11,35 +11,21 @@ module.exports = {
         .setDescription('adds to user balance / license.')
         .addSubcommand(subcommand =>
             subcommand
-                .setName('balance')
-                .setDescription('Adds balance to a user.')
-                .addUserOption(option => option.setName('user').setDescription('Select the user').setRequired(true))
-                .addIntegerOption(option => option.setName('value').setDescription('Number to add to the balance').setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
                 .setName('license')
                 .setDescription('Adds license to a user.')
                 .addUserOption(option => option.setName('user').setDescription('Select the user').setRequired(true))
                 .addIntegerOption(option => option.setName('days').setDescription('Days of license.').setRequired(true))
         ),
-    run: async ({interaction}) => {
-        const subcommand = interaction.options.getSubcommand();
+    run: async ({ interaction }) => {
         const user = interaction.options.getUser('user');
         if (!authUtil.checkId(interaction.user.id)) {
             interaction.reply({embeds: [embed.createEmbed("No permissions", `You are not allowed to use that command`, discord.Colors.DarkRed)]});
         } else {
             try {
-                if (subcommand === 'balance') {
-                    const tokensToAdd = interaction.options.getInteger('value');
-                    await addTokens(user.id, tokensToAdd);
-                    interaction.reply({embeds: [embed.createEmbed(`${user.tag} balance`, `has been updated to: ${await getUserTokens(user.id)}.`, discord.Colors.DarkGreen)]});
-                } else if (subcommand === 'license') {
-                    const days = interaction.options.getInteger('days');
-                    const durationInMilliseconds = days * 24 * 60 * 60 * 1000;
-                    await addLifetime(user.id, durationInMilliseconds);
-                    interaction.reply({embeds: [embed.createEmbed(`${user.tag} license`, `has been updated. It will expire on: ${await getUserLifetime(user.id)}.`, discord.Colors.DarkGreen)]});
-                }
+                const days = interaction.options.getInteger('days');
+                const durationInMilliseconds = days * 24 * 60 * 60 * 1000;
+                await addLifetime(user.id, durationInMilliseconds);
+                interaction.reply({embeds: [embed.createEmbed(`${user.tag} license`, `has been updated. It will expire on: ${await getUserLifetime(user.id)}.`, discord.Colors.DarkGreen)]});
             } catch (error) {
                 interaction.reply({embeds: [embed.createEmbed(`Error`, `Could not update: ${error}`, discord.Colors.DarkRed)]});
             }

@@ -19,8 +19,6 @@ async function sendEmail(subject, htmlContent, email, companyName) {
     };
 
     try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log(info)
         return 'Email sent successfully!';
     } catch (error) {
         console.error('Error sending email:', error);

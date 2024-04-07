@@ -60,7 +60,7 @@ async function redeemKey(interaction, key) {
 
 async function addLifetime(userId, duration) {
     try {
-        console.log(userId);
+
         // Find the user by ID
         let user = await User.findOne({ userId });
 
@@ -68,7 +68,6 @@ async function addLifetime(userId, duration) {
         if (!user) {
             user = new User({ userId });
         }
-        console.log(duration);
         // Calculate the expiration time by adding the duration to the current date
         const expirationTime = new Date(Date.now() + duration);
 
@@ -89,7 +88,7 @@ async function addLifetime(userId, duration) {
         await user.save();
         // Save the user to the database using the standard save method
 
-        console.log('User and lifetime saved successfully');
+        console.log(`Added lifetime to ${user.id}`);
     } catch (error) {
         console.log(`Error: ${error}`);
     } finally {
@@ -107,8 +106,6 @@ async function swichBlacklist(userId) {
         user.blacklist = !user.blacklist;
 
         await user.save();
-
-        console.log('User and blacklist saved successfully');
     } catch (error) {
         console.log(`Error: ${error}`);
     } finally {

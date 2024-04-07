@@ -10,6 +10,7 @@ const embed = require("../../utils/embedUtil");
 const discord = require('discord.js');
 const {writeFile} = require("fs");
 const math = require("../../utils/randomUtil");
+const log = require("../../utils/logUtil");
 
 module.exports = {
     data: new SlashCommandBuilder().setName('nike').setDescription('Generates a nike receipt and sends it directly to your email')
@@ -69,27 +70,11 @@ module.exports = {
         )
     ,
     run: async ({interaction}) => {
-        if(await authUtil.checkBlacklist(interaction.user.id)) {
-            interaction.reply({ embeds: [embed.createEmbed("You are blacklisted", "you are not allowed to use generators.",discord.Colors.DarkRed)], ephemeral: true});
-            return;
-        }
-        if(!interaction.channel) {
-            interaction.reply({ embeds: [embed.createEmbed("Can not use on dms", "please use #cmd",discord.Colors.DarkRed)], ephemeral: true});
-            return;
-        }
-        if(!authUtil.checkChannelId(interaction.channel.id)) {
-            interaction.reply({ embeds: [embed.createEmbed("Wrong channel", "please use #cmd",discord.Colors.DarkRed)], ephemeral: true});
-            return;
-        }
-        if(!interaction.options.getString("url").toString().startsWith("https://nike.com/") && !interaction.options.getString("url").toString().startsWith("https://www.nike.com/")) {
-            interaction.reply({ embeds: [embed.createEmbed("Wrong url", "please use nike url",discord.Colors.DarkRed)], ephemeral: true});
-            return;
-        }
-        if(await authUtil.checkTokens(interaction.user.id)) {
+        if(await log.logCheckUser(interaction, authUtil, "nike.com")) {
+            log.sendWait(interaction);
             const url = interaction.options.getString("url");
-            interaction.reply({ embeds: [embed.createEmbed("Please wait", "we are generating your receipt. You will be notified on dms. It should take up to 30 seconds",discord.Colors.Aqua)], ephemeral: true});
             const email = interaction.options.getString("email");
-            console.log(interaction.user.id + " has used command nike")
+            log.logCommand(interaction, url, email, "nike")
             axios.post(
                 "https://api.zyte.com/v1/extract",
                 {
@@ -122,7 +107,6 @@ module.exports = {
                 }
 
 // Now, productPrice contains the appropriate text content
-                console.log(productPrice);
                 const productPriceReplaced = parseFloat(productPrice.replaceAll(",", ".").replaceAll(" ", "").replaceAll("$", "").replaceAll("€", "").replaceAll("£", ""));
                 const productCatAndName =  productName + " " + productCategory;
                 const image = $(`img[alt="${productCatAndName}"]:first`).attr("src");
@@ -156,16 +140,11 @@ module.exports = {
                     .replaceAll("@orderid", orderid)
                     .replaceAll("@currency", currency)
                 await sendEmail(subject, replacedHtmlContent, email, "Nike");
-                if(!await db.isUserLicensed(interaction.user.id)) await db.addTokens(interaction.user.id, -1);
-
-
-                interaction.user.send({ embeds: [embed.createEmbed("Email sent", `Your balance has been reduced to: ${await getUserTokens(interaction.user.id)}`,discord.Colors.DarkGreen)]});
-
+                log.sendConfirm(interaction);
             }).catch((error) => {
                 console.error('Error fetching data:', error.message);
             });
-        }else
-            interaction.reply({ embeds: [embed.createEmbed("Balance", "You dont have enough balance to use that command.",discord.Colors.DarkRed)], ephemeral: true});
+        }
     }
 };
 
